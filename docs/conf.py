@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'neo4j-batch-driver'
+project = 'neo4j-connector'
 copyright = '2018, Jelle Jan Bankert (Textkernel B.V.)'
 author = 'Jelle Jan Bankert (Textkernel B.V.)'
 

@@ -2,3 +2,5 @@
 __pycache__/
 venv/
 _build/
+build/
+dist/
