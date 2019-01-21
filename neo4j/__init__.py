@@ -179,8 +179,8 @@ class Neo4jErrors(Exception):
     def __init__(self, errors: List[dict]):
         self.errors = [Neo4jError(error['code'], error['message']) for error in errors]
 
-    def __getitem__(self, index):
-        return self.errors[index]
+    def __iter__(self):
+        return iter(self.errors)
 
 
 # wrapped the namedtuple in a class so it gets documented properly
