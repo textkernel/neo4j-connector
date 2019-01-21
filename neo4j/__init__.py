@@ -10,7 +10,13 @@ from collections import namedtuple
 
 
 class Statement(dict):
-    """Class that helps transform a cypher query plus optional parameters into the right dictionary structure."""
+    """Class that helps transform a cypher query plus optional parameters into the right dictionary structure.
+
+    Args:
+        cypher (str): the Cypher statement
+        parameters (dict): the parameters to be filled into the Cypher statement. Parameters help with speeding up
+            queries because the execution plan for identical Cypher statements is cached.
+    """
 
     def __init__(self, cypher: str, parameters: dict = None):
         super().__init__(statement=cypher)
