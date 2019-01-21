@@ -1,14 +1,17 @@
-.. neo4j-batch-driver documentation master file, created by
-   sphinx-quickstart on Thu Dec 27 15:52:10 2018.
+.. neo4j-connector documentation master file, created by
+   sphinx-quickstart on Fri Jan 18 12:50:14 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+Welcome to neo4j-connector's documentation!
+===========================================
 
-neo4j
-================================
-.. automodule:: neo4j
-   :members:
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
+   source/neo4j
+   source/readme
 
 
 
@@ -16,5 +19,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

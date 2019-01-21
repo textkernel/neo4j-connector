@@ -14,20 +14,19 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
 
+sys.path.append(os.path.join(os.path.dirname(__name__), '..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'neo4j-connector'
-copyright = '2018, Jelle Jan Bankert (Textkernel B.V.)'
+copyright = '2019, Jelle Jan Bankert (Textkernel B.V.)'
 author = 'Jelle Jan Bankert (Textkernel B.V.)'
 
 # The short X.Y version
-version = ''
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '1.0'
-
+release = '1.0.0-beta-0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,10 +39,9 @@ release = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon',
+    'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -68,11 +66,10 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'venv']
+exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -106,8 +103,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'neo4j-batch-driverdoc'
-
+htmlhelp_basename = 'neo4j-connectordoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -133,20 +129,18 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'neo4j-batch-driver.tex', 'neo4j-batch-driver Documentation',
-     'Jelle Jan Bankert (Textkernel B.V.)', 'manual'),
+    (master_doc, 'neo4j-connector.tex', 'neo4j-connector Documentation',
+     'Jelle Jan Bankert', 'manual'),
 ]
-
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'neo4j-batch-driver', 'neo4j-batch-driver Documentation',
+    (master_doc, 'neo4j-connector', 'neo4j-connector Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -154,11 +148,10 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'neo4j-batch-driver', 'neo4j-batch-driver Documentation',
-     author, 'neo4j-batch-driver', 'One line description of project.',
+    (master_doc, 'neo4j-connector', 'neo4j-connector Documentation',
+     author, 'neo4j-connector', 'One line description of project.',
      'Miscellaneous'),
 ]
-
 
 # -- Options for Epub output -------------------------------------------------
 
@@ -176,6 +169,5 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
-
 
 # -- Extension configuration -------------------------------------------------
