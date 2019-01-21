@@ -36,11 +36,14 @@ class Statement(dict):
 
 
 class Connector:
-    """Class that abstracts communication with neo4j into up-front setup and then running one or more ``neo4j.Statement``.
+    """Class that abstracts communication with neo4j into up-front setup and then running one or more
+    ``neo4j.Statement``. The connector doesn't maintain an open connection and thus doesn't need to be closed after use.
 
     Args:
         endpoint (str): the fully qualified endpoint to send messages to
         credentials (tuple[str, str]): the credentials that are used to authenticate the requests
+        verbose_errors (bool): if true the Connector prints Neo4jErrors to the error output in a bit nicer format
+            than the stack trace.
 
     Example code:
 
