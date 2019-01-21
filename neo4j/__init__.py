@@ -1,5 +1,5 @@
 """
-This module implements access to the `Neo4j HTTP API <https://neo4j.com/docs/http-api/current/>`_ using the requests
+This module implements access to the `Neo4j HTTP API <https://neo4j.com/docs/http-api/3.5/>`_ using the requests
 library.
 """
 
@@ -10,12 +10,13 @@ from collections import namedtuple
 
 
 class Statement(dict):
-    """Class that helps transform a cypher query plus optional parameters into the right dictionary structure.
+    """Class that helps transform a cypher query plus optional parameters into the dictionary structure that Neo4j
+    expects. The values can easily be accessed as shown in the last code example.
 
     Args:
         cypher (str): the Cypher statement
-        parameters (dict): the parameters to be filled into the Cypher statement. Parameters help with speeding up
-            queries because the execution plan for identical Cypher statements is cached.
+        parameters (dict): [optional] parameters that are merged into the statement at the server-side. Parameters help
+            with speeding up queries because the execution plan for identical Cypher statements is cached.
 
     Example code:
 
@@ -27,6 +28,11 @@ class Statement(dict):
 
     >>> # create multiple parametrized statements
     >>> statements = [Statement("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': uuid}) for uuid in ['123abc', '456def']]
+
+    >>> # print individual Statement values
+    >>> statement = Statement("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': '123abc'})
+    >>> print("Cypher statement: {}".format(statement['statement']))
+    >>> print("Parameters dict: {}".format(str(statement['parameters']))
     """
 
     def __init__(self, cypher: str, parameters: dict = None):
@@ -36,14 +42,15 @@ class Statement(dict):
 
 
 class Connector:
-    """Class that abstracts communication with neo4j into up-front setup and then running one or more
-    ``neo4j.Statement``. The connector doesn't maintain an open connection and thus doesn't need to be closed after use.
+    """Class that abstracts communication with neo4j into up-front setup and then executing one or more
+    :class:`Statement`. The connector doesn't maintain an open connection and thus doesn't need to be closed after
+    use.
 
     Args:
         endpoint (str): the fully qualified endpoint to send messages to
         credentials (tuple[str, str]): the credentials that are used to authenticate the requests
-        verbose_errors (bool): if true the Connector prints Neo4jErrors to the error output in a bit nicer format
-            than the stack trace.
+        verbose_errors (bool): if set to True the :class:`Connector` prints :class:`Neo4jErrors` messages and codes to
+            the standard error output in a bit nicer format than the stack trace.
 
     Example code:
 
@@ -72,12 +79,13 @@ class Connector:
 
     def run(self, cypher: str, parameters: dict = None):
         """
-        Method that runs a single statement against Neo4j in a single transaction. This method builds the Statement
-        object for the user.
+        Method that runs a single statement against Neo4j in a single transaction. This method builds the
+        :class:`Statement` object for the user.
 
         Args:
             cypher (str): the Cypher statement
-            parameters (dict): [optional] parameters that are merged into the statement at the server-side
+            parameters (dict): [optional] parameters that are merged into the statement at the server-side. Parameters
+                help with speeding up queries because the execution plan for identical Cypher statements is cached.
 
         Returns:
             list[dict]: a list of dictionaries, one dictionary for each row in the result. The keys in the dictionary
@@ -103,14 +111,15 @@ class Connector:
 
     def run_multiple(self, statements: List[Statement]):
         """
-        Method that runs multiple statements against Neo4j in a single transaction.
+        Method that runs multiple :class:`Statement`\ s against Neo4j in a single transaction.
 
         Args:
-            statements (list[Statement]): the Statements to run
+            statements (list[Statement]): the statements to execute
 
         Returns:
             list[list[dict]]: a list of statement results, each containing a list of dictionaries, one dictionary for
-            each row in the result. The keys in the dictionary are defined in the Cypher statement.
+            each row in the result. The keys in the dictionary are defined in the Cypher statement. The statement
+            results have the same order as the corresponding :class:`Statement`\ s
 
         Raises:
             Neo4jErrors
@@ -120,22 +129,28 @@ class Connector:
         >>> cypher = "MATCH (n:node {uuid: {uuid}}) RETURN n"
         >>> statements = [Statement(cypher, {'uuid': uuid}) for uuid in ['123abc', '456def']
         >>> statements_responses = connector.run_multiple(statements)
-        >>> for statement_responses in statements_responses
-        >>>     for row in statement_responses
+        >>> for statement_responses in statements_responses:
+        >>>     for row in statement_responses:
         >>>         print(row)
 
+        >>> # we can easily re-use some information from the statement in the next example
+        >>> cypher = "MATCH (language {name: {name}})-->(word:word)) RETURN word"
+        >>> statements = [Statement(cypher, {'name': lang}) for lang in ['en', 'nl']
+        >>> statements_responses = connector.run_multiple(statements)
+        >>> for statement, responses in zip(statements, statements_responses):
+        >>>     for row in responses:
+        >>>         print("{language}: {word_lemma}".format(language=statement['parameters']['lang'], word=row['word']['lemma']))
         """
         response = self.post(statements)
         return self._clean_results(response)
 
     def post(self, statements: List[Statement]):
         """
-        Method that performs an HTTP POST with the provided statements and returns the parsed data structure as
-        provided by Neo4j. This specifically includes the metadata per row and has a separate entry for the result
-        names and the actual values.
-
-        See the Neo4j documentation here:
-        https://neo4j.com/docs/http-api/current/http-api-actions/begin-and-commit-a-transaction-in-one-request/
+        Method that performs an HTTP POST with the provided :class:`Statement`\ s and returns the parsed data structure
+        as `specified in Neo4j's documentation
+        <https://neo4j.com/docs/http-api/3.5/http-api-actions/begin-and-commit-a-transaction-in-one-request/>`_.
+        This specifically includes the metadata per row and has a separate entry for the result names and the actual
+        values.
 
         Args:
             statements (list[Statement]): the statements that are POST-ed to Neo4j
@@ -151,9 +166,9 @@ class Connector:
         >>> cypher = "MATCH (n:node {uuid: {uuid}}) RETURN n"
         >>> statements = [Statement(cypher, {'uuid': uuid}) for uuid in ['123abc', '456def']
         >>> statements_responses = connector.run_multiple(statements)
-        >>> for result in statements_responses['results']
-        >>>     for datum in result['data']
-        >>>         print(datum['row'])
+        >>> for result in statements_responses['results']:
+        >>>     for datum in result['data']:
+        >>>         print(datum['row'][0]) #n is the first item in the row
         """
         response = requests.post(self.endpoint, json={'statements': statements}, auth=self.credentials)
         json_response = response.json()
@@ -185,7 +200,7 @@ class Connector:
 
 class Neo4jErrors(Exception):
     """Exception that is raised when Neo4j responds to a request with one or more error message. Iterate over this
-    object to get the individual :class:Neo4jError objects
+    object to get the individual :class:`Neo4jError` objects
 
     Args:
         errors (list(dict)): A list of dictionaries that contain the 'code' and 'message' properties
