@@ -1,8 +1,8 @@
-***************
-Neo4j Connector
-***************
+******
+README
+******
 
-This library contains everything you need to run single-commit statements with Neo4j 3.0 and above through the HTTP API.
+This library contains everything you need to run 'instant-commit' statements with Neo4j 3.0 and above through the HTTP API.
 
 Background
 ==========
@@ -20,7 +20,7 @@ Example
 
     from neo4j-connector import neo4j
 
-    connector = neo4j.Connector('http://localhost:7474')
+    connector = neo4j.Connector('http://localhost:7474', ('neo4j','neo4j'))
     response = connector.run("""MATCH () RETURN COUNT(*) as node_count""")
     first_row = response[0]
     print(first_row['node_count'])
@@ -35,7 +35,7 @@ To install the latest stable version, use:
     pip install neo4j-connector
 
 Github
-=======
+======
 
 This library lives at https://github.com/textkernel/neo4j-connector. Suggestions, bug-reports and pull requests are
 welcome there.

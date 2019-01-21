@@ -1,13 +1,6 @@
-"""Module that contains everything you need to run single-commit statements with Neo4j through the HTTP API
-
-Research into the speed of performing batch-type actions on Neo4j showed that using a large, single-commit POST-request
-through Neo4j's HTTP API outperforms other methods like utilised by 'py2neo' and the official 'neo4j-driver'. The goal
-of this module is to make it easy to run one or more statements in a fast, single request.
-
-Community thread about the difference in performance between drivers:
-    https://community.neo4j.com/t/barebones-http-requests-much-faster-than-python-neo4j-driver-and-py2neo
-Neo4j HTTP API specification:
-    https://neo4j.com/docs/http-api/3.5/
+"""
+This module implements access to the `Neo4j HTTP API <https://neo4j.com/docs/http-api/current/>`_ using the requests
+library.
 """
 
 import requests
