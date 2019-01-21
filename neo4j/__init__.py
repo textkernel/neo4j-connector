@@ -16,6 +16,17 @@ class Statement(dict):
         cypher (str): the Cypher statement
         parameters (dict): the parameters to be filled into the Cypher statement. Parameters help with speeding up
             queries because the execution plan for identical Cypher statements is cached.
+
+    Example code:
+
+    >>> # create simple statement
+    >>> statement = Statement("MATCH () RETURN COUNT(*) AS node_count")
+
+    >>> # create parametrized statement
+    >>> statement = Statement("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': '123abc'})
+
+    >>> # create multiple parametrized statements
+    >>> statements = [Statement("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': uuid}) for uuid in ['123abc', '456def']]
     """
 
     def __init__(self, cypher: str, parameters: dict = None):
@@ -30,6 +41,17 @@ class Connector:
     Args:
         endpoint (str): the fully qualified endpoint to send messages to
         credentials (tuple[str, str]): the credentials that are used to authenticate the requests
+
+    Example code:
+
+    >>> # default connector
+    >>> connector = Connector()
+
+    >>> # localhost connector, custom credentials
+    >>> connector = Connector(credentials=('username', 'password'))
+
+    >>> # custom connector
+    >>> connector = Connector('http://mydomain:7474', ('username', 'password'))
     """
 
     # default endpoint of localhost
@@ -64,14 +86,14 @@ class Connector:
         Example code:
 
         >>> # retrieve all nodes' properties
-        >>> all_nodes = [row['n'] for row in run("MATCH (n) RETURN n")]
+        >>> all_nodes = [row['n'] for row in connector.run("MATCH (n) RETURN n")]
 
         >>> # single row result
-        >>> node_count = run("MATCH () RETURN COUNT(*) AS node_count")[0]['node_count']
+        >>> node_count = connector.run("MATCH () RETURN COUNT(*) AS node_count")[0]['node_count']
 
         >>> # get a single node's properties with a statement + parameter
         >>> # in this case we're assuming: CONSTRAINT ON (node:node) ASSERT node.uuid IS UNIQUE
-        >>> single_node_properties_by_uuid = run("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': '123abc'})[0]['n']
+        >>> single_node_properties_by_uuid = connector.run("MATCH (n:node {uuid: {uuid}}) RETURN n", {'uuid': '123abc'})[0]['n']
         """
         response = self.post([Statement(cypher, parameters)])
         return self._clean_results(response)[0]
@@ -94,7 +116,7 @@ class Connector:
 
         >>> cypher = "MATCH (n:node {uuid: {uuid}}) RETURN n"
         >>> statements = [Statement(cypher, {'uuid': uuid}) for uuid in ['123abc', '456def']
-        >>> statements_responses = run_multiple(statements)
+        >>> statements_responses = connector.run_multiple(statements)
         >>> for statement_responses in statements_responses
         >>>     for row in statement_responses
         >>>         print(row)
@@ -125,7 +147,7 @@ class Connector:
 
         >>> cypher = "MATCH (n:node {uuid: {uuid}}) RETURN n"
         >>> statements = [Statement(cypher, {'uuid': uuid}) for uuid in ['123abc', '456def']
-        >>> statements_responses = run_multiple(statements)
+        >>> statements_responses = connector.run_multiple(statements)
         >>> for result in statements_responses['results']
         >>>     for datum in result['data']
         >>>         print(datum['row'])
