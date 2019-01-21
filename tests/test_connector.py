@@ -4,10 +4,12 @@ import neo4j
 
 class ConnectorBasicsTestCase(TestCase):
     def test_basic_parameters_existence(self):
-        self.connector = neo4j.Connector()
-        self.assertIsNotNone(self.connector.endpoint)
-        self.assertIsNotNone(self.connector.credentials)
-        self.assertIsNotNone(self.connector.verbose_errors)
+        hostname = 'http://domain:7474'
+        connector = neo4j.Connector(hostname)
+        self.assertTrue(connector.endpoint.startswith(hostname))
+        self.assertTrue(connector.endpoint.endswith(connector.default_path))
+        self.assertIsNotNone(connector.credentials)
+        self.assertIsNotNone(connector.verbose_errors)
 
 
 class ErrorHandlingTestCase(TestCase):
@@ -83,13 +85,16 @@ class PostingStatementsTestCase(TestCase):
 
     @mock.patch('neo4j.requests.post', side_effect=mock_requests_post)
     def test_post(self, mock_get):
-        endpoint = 'endpoint'
+        hostname = 'hostname'
         credentials = ('username', 'password')
 
-        connector = neo4j.Connector(endpoint, credentials)
+        connector = neo4j.Connector(hostname, credentials)
         connector.post([neo4j.Statement(self.cypher1)])
 
-        mock_get.assert_called_once_with(endpoint, auth=credentials, json={'statements': [{'statement': self.cypher1}]})
+        expected_endpoint = ''.join([hostname, connector.default_path])
+
+        mock_get.assert_called_once_with(expected_endpoint, auth=credentials,
+                                         json={'statements': [{'statement': self.cypher1}]})
 
     @mock.patch('neo4j.requests.post', side_effect=mock_requests_post)
     def test_run_single(self, mock_get):

@@ -8,9 +8,6 @@ Community thread about the difference in performance between drivers:
     https://community.neo4j.com/t/barebones-http-requests-much-faster-than-python-neo4j-driver-and-py2neo
 Neo4j HTTP API specification:
     https://neo4j.com/docs/http-api/3.5/
-
-Library License:
-    This library ("neo4j-batch-driver") is licenced under GNU Lesser General Public License version 3 (LGPL v3).
 """
 
 import requests
@@ -37,14 +34,15 @@ class Connector:
     """
 
     # default endpoint of localhost
-    default_endpoint = 'http://localhost:7474/db/data/transaction/commit'
+    default_host = 'http://localhost:7474'
+    default_path = '/db/data/transaction/commit'
 
     # default credentials
     default_credentials = ('neo4j', 'neo4j')
 
-    def __init__(self, endpoint: str = default_endpoint, credentials: Tuple[str, str] = default_credentials,
+    def __init__(self, host: str = default_host, credentials: Tuple[str, str] = default_credentials,
                  verbose_errors=False):
-        self.endpoint = endpoint
+        self.endpoint = ''.join([host, self.default_path])
         self.credentials = credentials
         self.verbose_errors = verbose_errors
 
