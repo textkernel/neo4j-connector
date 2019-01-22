@@ -41,3 +41,8 @@ Github
 
 This library lives at https://github.com/textkernel/neo4j-connector. Suggestions, bug-reports and pull requests are
 welcome there.
+
+Documentation
+=============
+
+The full API documentation lives at https://neo4j-connector.readthedocs.io/en/latest/
