@@ -42,7 +42,7 @@ class Statement(dict):
 
 
 class Connector:
-    """Class that abstracts communication with neo4j into up-front setup and then executing one or more
+    """Class that abstracts communication with neo4j into up-front setup and then executes one or more
     :class:`Statement`. The connector doesn't maintain an open connection and thus doesn't need to be closed after
     use.
 
