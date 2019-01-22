@@ -20,7 +20,7 @@ Example
 
 .. code-block:: python
 
-    from neo4j-connector import neo4j
+    import neo4j
 
     connector = neo4j.Connector('http://localhost:7474', ('neo4j','neo4j'))
     response = connector.run("""MATCH () RETURN COUNT(*) as node_count""")
