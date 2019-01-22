@@ -4,3 +4,4 @@ venv/
 _build/
 build/
 dist/
+neo4j_connector.egg-info/
