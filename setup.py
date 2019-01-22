@@ -11,7 +11,7 @@ setup(
     version='1.0.0',
     description='Connector with single-request transactions for Neo4j 3.0 and above',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     author='Jelle Jan Bankert (Textkernel BV)',
     author_email='bankert@textkernel.com',
     url='https://github.com/textkernel/neo4j-connector',
