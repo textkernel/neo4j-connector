@@ -91,7 +91,7 @@ class PostingStatementsTestCase(TestCase):
         connector = neo4j.Connector(hostname, credentials)
         connector.post([neo4j.Statement(self.cypher1)])
 
-        expected_endpoint = ''.join([hostname, connector.default_path])
+        expected_endpoint = hostname + connector.default_path
 
         mock_get.assert_called_once_with(expected_endpoint, auth=credentials,
                                          json={'statements': [{'statement': self.cypher1}]})

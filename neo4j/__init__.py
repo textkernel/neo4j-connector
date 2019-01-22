@@ -73,7 +73,7 @@ class Connector:
 
     def __init__(self, host: str = default_host, credentials: Tuple[str, str] = default_credentials,
                  verbose_errors=False):
-        self.endpoint = ''.join([host, self.default_path])
+        self.endpoint = host + self.default_path
         self.credentials = credentials
         self.verbose_errors = verbose_errors
 
