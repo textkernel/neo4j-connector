@@ -109,12 +109,15 @@ class Connector:
         response = self.post([Statement(cypher, parameters)])
         return self._clean_results(response)[0]
 
-    def run_multiple(self, statements: List[Statement]):
+    def run_multiple(self, statements: List[Statement], batch_size: int = None) -> List[List[dict]]:
         """
-        Method that runs multiple :class:`Statement`\ s against Neo4j in a single transaction.
+        Method that runs multiple :class:`Statement`\ s against Neo4j in a single transaction or several batches.
 
         Args:
             statements (list[Statement]): the statements to execute
+            batch_size (int): [optional] number of statements to send to Neo4j per batch. In case the batch_size is
+                omitted (i.e. None) then all statements are sent as a single batch. This parameter can help make large
+                jobs manageable for Neo4j (e.g not running out of memory).
 
         Returns:
             list[list[dict]]: a list of statement results, each containing a list of dictionaries, one dictionary for
@@ -133,6 +136,15 @@ class Connector:
         >>>     for row in statement_responses:
         >>>         print(row)
 
+        >>> # we can use batches if we're likely to overwhelm neo4j by sending everything in a single request
+        >>> # note that this has no effect on the returned data structure
+        >>> cypher = "MATCH (n:node {uuid: {uuid}}) RETURN n"
+        >>> statements = [Statement(cypher, {'uuid': uuid}) for uuid in range(1_000_000)
+        >>> statements_responses = connector.run_multiple(statements, batch_size=10_000)
+        >>> for statement_responses in statements_responses:
+        >>>     for row in statement_responses:
+        >>>         print(row)
+
         >>> # we can easily re-use some information from the statement in the next example
         >>> cypher = "MATCH (language {name: {name}})-->(word:word)) RETURN word"
         >>> statements = [Statement(cypher, {'name': lang}) for lang in ['en', 'nl']
@@ -141,8 +153,12 @@ class Connector:
         >>>     for row in responses:
         >>>         print("{language}: {word_lemma}".format(language=statement['parameters']['lang'], word=row['word']['lemma']))
         """
-        response = self.post(statements)
-        return self._clean_results(response)
+        # flatten cleaned responses from batches
+        return [
+            row
+            for statements_batch in self.make_batches(statements, batch_size)
+            for row in self._clean_results(self.post(statements_batch))
+        ]
 
     def post(self, statements: List[Statement]):
         """
@@ -176,6 +192,20 @@ class Connector:
         self._check_for_errors(json_response)
 
         return json_response
+
+    @staticmethod
+    def make_batches(statements: List[Statement], batch_size: int = None) -> List:
+        # only 1 batch
+        if batch_size is None:
+            yield statements
+
+        # multiple batches
+        else:
+            if batch_size < 1:
+                raise ValueError("batchsize should be >= 1")
+
+            for start_idx in range(0, len(statements), batch_size):
+                yield statements[start_idx:start_idx + batch_size]
 
     def _check_for_errors(self, json_response):
         errors = json_response.get('errors')
