@@ -12,6 +12,7 @@ Welcome to neo4j-connector's documentation!
 
    source/neo4j
    source/readme
+   source/changelog
 
 
 
