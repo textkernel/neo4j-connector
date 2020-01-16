@@ -8,7 +8,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='neo4j-connector',
-    version='1.0.1',
+    version='1.1.0',
     description='Connector with single-request transactions for Neo4j 3.0 and above',
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -26,6 +26,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Database",
         "Topic :: Software Development",
         "Topic :: Utilities",

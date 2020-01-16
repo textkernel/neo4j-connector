@@ -112,3 +112,20 @@ class PostingStatementsTestCase(TestCase):
 
         statement_2_first_row = response[1][0]
         self.assertEqual(statement_2_first_row['key-cypher-2'], 'value-cypher-2')
+
+        # check that post has been called 1 times (i.e. all statements in a single post request)
+        self.assertEqual(mock_get.call_count, 1)
+
+    @mock.patch('neo4j.requests.post', side_effect=mock_requests_post)
+    def test_run_multiple_batch(self, mock_get):
+        statements = [neo4j.Statement(self.cypher1), neo4j.Statement(self.cypher2)]
+        response = self.connector.run_multiple(statements, batch_size=1)
+
+        statement_1_first_row = response[0][0]
+        self.assertEqual(statement_1_first_row['key-cypher-1'], 'value-cypher-1')
+
+        statement_2_first_row = response[1][0]
+        self.assertEqual(statement_2_first_row['key-cypher-2'], 'value-cypher-2')
+
+        # check that post has been called 2 times (i.e. 2 batches of a single statement per post request)
+        self.assertEqual(mock_get.call_count, 2)

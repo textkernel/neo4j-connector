@@ -45,4 +45,4 @@ welcome there.
 Documentation
 =============
 
-The full API documentation lives at https://neo4j-connector.readthedocs.io
+The documentation (including changelog) lives at https://neo4j-connector.readthedocs.io
