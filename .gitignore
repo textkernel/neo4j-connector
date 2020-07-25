@@ -5,3 +5,9 @@ _build/
 build/
 dist/
 neo4j_connector.egg-info/
+.pytest_cache/
+.mypy_cache/
+data/
+.vscode/
+Pipfile
+Pipfile.lock
